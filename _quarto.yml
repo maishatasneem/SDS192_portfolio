@@ -3,12 +3,19 @@ project:
   output-dir: docs
 
 website:
-  title: "website"
+  title: "Maisha Tasneem"
   navbar:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - href: about.qmd
+        text: About Me
+      - href: scorecard_analysis.qmd
+        text: Project-1
+      - href: fec-analysis.qmd
+        text: Project-2
+      - href: mapping.qmd
+        text: Project-3
 
 format:
   html:
