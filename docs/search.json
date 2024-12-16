@@ -1,0 +1,849 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome to my website!",
+    "section": "",
+    "text": "This website is a portfolio of my work done for my Introduction to Data Science class.\n\n\n\nCool map from my final project!\n\n\nTo see my R learning journey from the beginning of the course to the final project, explore the projects below -\n\nProject 1: Does the governance structure of the largest colleges in Massachusetts affect the retention rate?\nProject 2: Expenditures and Committee Contributions for Democrat and Republicans in the 2016 presidential election.\nProject 3: Late State Breast Cancer Incidence in the USA\n\nYou can find more about me on the “About Me” section!"
+  },
+  {
+    "objectID": "Project/scorecard_analysis.html",
+    "href": "Project/scorecard_analysis.html",
+    "title": "SDS 192 Mini-Project 1",
+    "section": "",
+    "text": "scorecard &lt;- sc_init() |&gt;\n  sc_year(2018) |&gt;                 #Note how we are looking at only 2018 data here!\n  sc_filter(stabbr == \"MA\") |&gt;     #Note how we are looking at only Massachusetts data here!\n  #The line below shows variable selection (there are lots of variables)\n  sc_select(unitid, city, control, ugds, ret_ft4) |&gt;\n  sc_get()\n\nLarge request will require: 1 additional pulls.\n\n\nRequest additional chunk 1\n\n\nRequest complete!\n\n\n\n#  Here's an example of how to recode the control variable\n\n# We are renaming the column control_text from control\nscorecard$control_text &lt;-\n  #The recode function does the work. It calls 1 \"Public\", 2 \" Private nonprofit\",etc. \n  recode(\n    scorecard$control, \n    \"1\" = \"Public\", \n    \"2\" = \"Private Non-profit\", \n    \"3\" = \"Private for-profit\",\n    .default = NA_character_\n  )\n\n\nview(scorecard)\n\n\n#Get the largest 50 colleges in MA\nsc_largest_50 &lt;- scorecard |&gt;\n  arrange(desc(ugds)) |&gt; #orders descending\n  head(50) #selects first 50\n\nview(sc_largest_50)\n\n\nPlot 1\n\n# Plot-1 : Frequency distribution of type of colleges among the 50 largest colleges in MA\nggplot(data = sc_largest_50,\n       map = aes(x = reorder(city, city, length), # reorders the cities with the highest number of UG schools from the largest 50\n                 fill = control_text)) +\n  geom_bar(width = 0.75) +\n  \n  # Labeling the aesthetics\n  labs(x = \"Cities\",\n       y = \"Number of Colleges\",\n       fill = NULL,\n       title = \"Governance Structure of Colleges in Massachussetts\",\n       subtitle = \"Of the 50 colleges with the largest undergraduate student population in 2018\",\n       caption = \"The 'City' variable with the cities with the 50 colleges having the  largest undergraduate student population has been mapped to x-axis (arranged in descending order) and the y-axis reflects the counts of the colleges.\n       The fill color maps the 'Public/Private Non-profit/Private For-profit' variable with the type of governance structure.\n       \n       Source: College Scorecard by the U.S. Department of Education (https://collegescorecard.ed.gov/)\") +\n  \n  #formatting scales \n  scale_y_continuous(breaks = seq(0, 10, by = 1)) + #  1 college equal to 1 unit on y axis\n scale_fill_manual(values = c(\"#FF0000\", \"#0000FF\")) + # Manually changes the control variable colors +\n  #scale_fill_brewer(direction = -1, type = \"qual\", palette = \"Set1\")+\n  coord_flip() + # Horizontal bar chart\n  \n  # Formatting the graph\n  theme_minimal() +\n  theme(\n    # aligning the caption to the plot area instead of panel\n    plot.caption.position = \"plot\", \n    \n    # positioning the legends on the top\n    legend.position = \"top\",\n    \n    # formatting texts and margins for the texts and titles\n    axis.text = element_text(size = 6), \n    plot.title = element_text(face = \"bold\", \n                              hjust = \"0.5\"),  \n    plot.margin = margin(t = 20, r = 50, b = 0, l = 40),\n    axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),\n    axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)),\n    plot.caption = element_text(color = alpha(\"black\", 0.5),\n                                face = \"italic\",\n                                size = 7,\n                                margin = margin(t = 20, r = -30, b = 20, l = 50)),\n    \n    # formatting grid color\n    panel.grid = element_line(color = alpha(\"grey\", 0.2)), \n  )\n\n\n\n\n\n\n\n\n\n\nPlot 2\n\n# Create plot 2 here\n\nggplot(data = sc_largest_50,\n       aes(x = ugds,\n           y = ret_ft4,\n           color  = control_text)) +\n  geom_jitter(size = 1.5, alpha = 0.75) + # Addressing Overplotting\n  scale_y_continuous(labels = scales::percent)+\n  labs(\n    title = \"Retention Rates in Comparison with the Undergraduate Student Number\",\n    subtitle = \"Of the 50 colleges with the largest undergraduate student population in 2018\",\n       x = \"Undergraduate Student Number\",\n       y = \"Retention Rates (%)\",\n       color = NULL,\n       caption = \"The 'Number of Undergraduate Students' variable of the 50 colleges having the  largest undergraduate student population has been mapped to x-axis and the y-axis reflects the 'Retention Rate of Fulltime students' at 4yr colleges with the .\n       The  color maps the 'Public/Private Non-profit/Private For-profit' variable with the type of governance structure.\n       \n       Source: College Scorecard by the U.S. Department of Education (https://collegescorecard.ed.gov/)\") +\n  scale_color_manual(values = c(\"#FF0000\", \"#0000FF\")) + # Manually changes the control variable colors\n\n # Formatting the graph\n  theme_minimal() +\n  theme(\n    # aligning the caption to the plot area instead of panel\n    plot.caption.position = \"plot\", \n    \n    # positioning the legends on the top\n    legend.position = \"top\",\n    \n    \n    # formatting texts and margins for the texts and titles\n    axis.text = element_text(size = 6), \n    plot.title = element_text(face = \"bold\", \n                              hjust = \"0.5\"),  \n    plot.margin = margin(t = 20, r = 50, b = 0, l = 40),\n    axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),\n    axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)),\n    plot.caption = element_text(color = alpha(\"black\", 0.5),\n                                face = \"italic\",\n                                size = 7,\n                                margin = margin(t = 20, r = -30, b = 20, l = 50)),\n    \n    # formatting grid color\n    panel.grid = element_line(color = alpha(\"grey\", 0.2))\n  )\n\nWarning: Removed 13 rows containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\n\n\n\nBlog post\n “Does the governance structure of the largest colleges in Massachusetts affect the retention rate?” \nWe investigated this question using the College Scorecard dataset. This data aims to increase transparency and help prospective students and families compare colleges based on their goals and requirements. The College Scorecard was produced by the U.S. Department of Education taking data from the federal reporting from institutions, data on federal financial aid, and tax information. These were taken directly or derived from the data reported to the Integrated Postsecondary Education Data System (IPEDS).\nFrom the dataset, we will be investigating our question using the data of 50 colleges in Massachusetts with the largest undergraduate student population. Delving deeper, we will be exploring the governance structure and retention rates. Firstly, we will group our selection of colleges based on the cities these are located in and then visualize the distribution of the type of governance structures – whether the colleges are Public, Private Non-profit, or Private For-profit. Then, we will examine the correlation between retention rates and the undergraduate population based on the type of institution to help us draw conclusions from the data.\nThe first plot explores the governance structure of the largest 50 colleges in different cities of Massachusetts. The largest 50 schools are grouped with the cities these are located in and the length of the bars indicates the number of Public, Private Non-Profit, and Private For-Profit universities in each of those cities. Notably, there are no Private For-profit college in our selection, hence the bar chart omits the category. The plot concludes Boston has the highest number of big schools, followed by Worcester, Springfield, and Cambridge. The colors of the bars indicate that overall the number of public schools is higher than the number of private colleges in our selection of the largest MA colleges.\nThe second plot explores the correlation between the undergraduate population and the retention rate. For public colleges, we can see an inconclusive positive correlation between a larger undergraduate population and a higher retention rate as the points are scattered, showing that larger public universities are likely to have a higher retention rate. However, the points for private nonprofit colleges are in a larger cluster, signifying that there isn’t a direct and obvious correlation between undergraduate student body size and retention rate.\nAssumptions and commitments that informed this data set include assuming that the colleges participate in Title IV programs (or meet similar criteria to participating institutions), and that these colleges report wholly correct data to the IPEDS. However, a lot of the data is missing as colleges did not report some data to the IPEDS. The educational institutions and organizations collecting the data have had a say regarding this dataset, and it is hard to find reliable data if the institutions don’t report their information. The benefits and harms of this dataset may be (shouldn’t be, but) that institutions can pick and choose the data they present, so that either data is missing, or it is positively skewed towards certain institutions when it’s beneficial."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Maisha Tasneem",
+    "section": "",
+    "text": "Maisha Tasneem is a Junior majoring in Biotechnology. She is interested in exploring Biology using computational methods. She is also passionate about making biology more accessible and fun to people using simple visualization about complex concepts!\nThis course is a baby step towards that…"
+  },
+  {
+    "objectID": "about.html#student-hours",
+    "href": "about.html#student-hours",
+    "title": "Nic Schwab",
+    "section": "Student Hours",
+    "text": "Student Hours\nDrop into the office:\n\nWednesday: 1:30-2:30 pm\nBy appointment in McConnell 214\n\nPlease let me know if the above times do not work for your schedule and we can coordinate another time."
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "Nic Schwab",
+    "section": "Education",
+    "text": "Education\n\nMS in Data Science (~2026)\nUniversity of Texas at Austin\nAustin, Texas\nMA in Mathematics (2009)\nAppalchain State University\nBoone, NC\nBA in Mathematics (2007)\nUC Santa Cruz\nSanta Cruz, CA"
+  },
+  {
+    "objectID": "about.html#experience",
+    "href": "about.html#experience",
+    "title": "Nic Schwab",
+    "section": "Experience",
+    "text": "Experience\n\nProfessor of Mathematics\nHolyoke Community College\nHolyoke, MA 2014–2023"
+  },
+  {
+    "objectID": "projects/scorecard_analysis.html",
+    "href": "projects/scorecard_analysis.html",
+    "title": "SDS 192 Mini-Project 1",
+    "section": "",
+    "text": "Plot 1\n\n\n\n\n\n\n\n\n\n\n\nPlot 2\n\n\n\n\n\n\n\n\n\n\n\nBlog post\n “Does the governance structure of the largest colleges in Massachusetts affect the retention rate?” \nWe investigated this question using the College Scorecard dataset. This data aims to increase transparency and help prospective students and families compare colleges based on their goals and requirements. The College Scorecard was produced by the U.S. Department of Education taking data from the federal reporting from institutions, data on federal financial aid, and tax information. These were taken directly or derived from the data reported to the Integrated Postsecondary Education Data System (IPEDS).\nFrom the dataset, we will be investigating our question using the data of 50 colleges in Massachusetts with the largest undergraduate student population. Delving deeper, we will be exploring the governance structure and retention rates. Firstly, we will group our selection of colleges based on the cities these are located in and then visualize the distribution of the type of governance structures – whether the colleges are Public, Private Non-profit, or Private For-profit. Then, we will examine the correlation between retention rates and the undergraduate population based on the type of institution to help us draw conclusions from the data.\nThe first plot explores the governance structure of the largest 50 colleges in different cities of Massachusetts. The largest 50 schools are grouped with the cities these are located in and the length of the bars indicates the number of Public, Private Non-Profit, and Private For-Profit universities in each of those cities. Notably, there are no Private For-profit college in our selection, hence the bar chart omits the category. The plot concludes Boston has the highest number of big schools, followed by Worcester, Springfield, and Cambridge. The colors of the bars indicate that overall the number of public schools is higher than the number of private colleges in our selection of the largest MA colleges.\nThe second plot explores the correlation between the undergraduate population and the retention rate. For public colleges, we can see an inconclusive positive correlation between a larger undergraduate population and a higher retention rate as the points are scattered, showing that larger public universities are likely to have a higher retention rate. However, the points for private nonprofit colleges are in a larger cluster, signifying that there isn’t a direct and obvious correlation between undergraduate student body size and retention rate.\nAssumptions and commitments that informed this data set include assuming that the colleges participate in Title IV programs (or meet similar criteria to participating institutions), and that these colleges report wholly correct data to the IPEDS. However, a lot of the data is missing as colleges did not report some data to the IPEDS. The educational institutions and organizations collecting the data have had a say regarding this dataset, and it is hard to find reliable data if the institutions don’t report their information. The benefits and harms of this dataset may be (shouldn’t be, but) that institutions can pick and choose the data they present, so that either data is missing, or it is positively skewed towards certain institutions when it’s beneficial."
+  },
+  {
+    "objectID": "404 page.html",
+    "href": "404 page.html",
+    "title": "404 page",
+    "section": "",
+    "text": "This is a boring 404 page. Go ba"
+  },
+  {
+    "objectID": "project_1/group-contract.html",
+    "href": "project_1/group-contract.html",
+    "title": "SDS 192 Group Contract",
+    "section": "",
+    "text": "Working in groups can be both incredibly rewarding and incredibly challenging. The most effective collaborations explicitly outline group roles, expectations, and procedures in advance to coordinate how the group will operate, to establish mechanisms of accountability, and to mitigate the risk of conflict. It is important that, throughout the semester, you address group concerns as they come up. This may involve assigning someone to check in with team members that are falling behind, establishing expectations for attending office hours and asking for help, calling team meetings to discuss issues, or reaching out to the instructor to resolve enduring and unresolved conflicts."
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-scheduling-meetings-and-hosting-zoom-calls",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-scheduling-meetings-and-hosting-zoom-calls",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for scheduling meetings and hosting Zoom calls?",
+    "text": "Who will be responsible for scheduling meetings and hosting Zoom calls?\nboth of us"
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-facilitating-discussion-during-team-meetings",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-facilitating-discussion-during-team-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for facilitating discussion during team meetings?",
+    "text": "Who will be responsible for facilitating discussion during team meetings?\nboth of us"
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-taking-notes-and-recording-decisions-during-meetings",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-taking-notes-and-recording-decisions-during-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for taking notes and recording decisions during meetings?",
+    "text": "Who will be responsible for taking notes and recording decisions during meetings?\nboth of us (on shared google doc)"
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-emailing-the-professor-with-questions",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-emailing-the-professor-with-questions",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for emailing the professor with questions?",
+    "text": "Who will be responsible for emailing the professor with questions?\nEmily"
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-requesting-group-assignment-extensions",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-requesting-group-assignment-extensions",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for requesting group assignment extensions?",
+    "text": "Who will be responsible for requesting group assignment extensions?\nEmily"
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-setting-deadlines-for-drafts",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-setting-deadlines-for-drafts",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for setting deadlines for drafts?",
+    "text": "Who will be responsible for setting deadlines for drafts?\nMaisha"
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-checking-in-with-team-members-when-drafts-are-late",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-checking-in-with-team-members-when-drafts-are-late",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for checking in with team members when drafts are late?",
+    "text": "Who will be responsible for checking in with team members when drafts are late?\nMaisha"
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-reviewing-all-materials-before-submission",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-reviewing-all-materials-before-submission",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for reviewing all materials before submission?",
+    "text": "Who will be responsible for reviewing all materials before submission?\nboth of us"
+  },
+  {
+    "objectID": "project_1/group-contract.html#who-will-be-responsible-for-submitting-assignments",
+    "href": "project_1/group-contract.html#who-will-be-responsible-for-submitting-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for submitting assignments?",
+    "text": "Who will be responsible for submitting assignments?\nEmily"
+  },
+  {
+    "objectID": "project_1/group-contract.html#where-will-the-team-keep-meeting-notes",
+    "href": "project_1/group-contract.html#where-will-the-team-keep-meeting-notes",
+    "title": "SDS 192 Group Contract",
+    "section": "Where will the team keep meeting notes?",
+    "text": "Where will the team keep meeting notes?\ngoogle docs"
+  },
+  {
+    "objectID": "project_1/group-contract.html#where-will-the-team-store-drafts-of-assignments",
+    "href": "project_1/group-contract.html#where-will-the-team-store-drafts-of-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "Where will the team store drafts of assignments?",
+    "text": "Where will the team store drafts of assignments?\ngoogle drive and github"
+  },
+  {
+    "objectID": "project_1/group-contract.html#through-what-channels-will-the-team-communicate-when-not-meeting",
+    "href": "project_1/group-contract.html#through-what-channels-will-the-team-communicate-when-not-meeting",
+    "title": "SDS 192 Group Contract",
+    "section": "Through what channels will the team communicate when not meeting?",
+    "text": "Through what channels will the team communicate when not meeting?\nInstagram/ Slack"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-is-the-expected-response-time-for-emails-and-messages",
+    "href": "project_1/group-contract.html#what-is-the-expected-response-time-for-emails-and-messages",
+    "title": "SDS 192 Group Contract",
+    "section": "What is the expected response time for emails and messages?",
+    "text": "What is the expected response time for emails and messages?\na day"
+  },
+  {
+    "objectID": "project_1/group-contract.html#how-often-will-the-team-meet",
+    "href": "project_1/group-contract.html#how-often-will-the-team-meet",
+    "title": "SDS 192 Group Contract",
+    "section": "How often will the team meet?",
+    "text": "How often will the team meet?\nat least once a week"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-daystimes-will-the-team-meet",
+    "href": "project_1/group-contract.html#what-daystimes-will-the-team-meet",
+    "title": "SDS 192 Group Contract",
+    "section": "What days/times will the team meet?",
+    "text": "What days/times will the team meet?\nThursday evening (or weekends if not)"
+  },
+  {
+    "objectID": "project_1/group-contract.html#how-long-will-meetings-be",
+    "href": "project_1/group-contract.html#how-long-will-meetings-be",
+    "title": "SDS 192 Group Contract",
+    "section": "How long will meetings be?",
+    "text": "How long will meetings be?\n1-2 hours"
+  },
+  {
+    "objectID": "project_1/group-contract.html#how-will-you-make-decisions-during-meetings-e.g.-consensus-a-vote",
+    "href": "project_1/group-contract.html#how-will-you-make-decisions-during-meetings-e.g.-consensus-a-vote",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you make decisions during meetings (e.g. consensus, a vote)?",
+    "text": "How will you make decisions during meetings (e.g. consensus, a vote)?\nconsensus"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-strategies-will-you-use-to-stay-on-task-during-meetings",
+    "href": "project_1/group-contract.html#what-strategies-will-you-use-to-stay-on-task-during-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What strategies will you use to stay on task during meetings?",
+    "text": "What strategies will you use to stay on task during meetings?\nhave an agenda and to-do list"
+  },
+  {
+    "objectID": "project_1/group-contract.html#how-should-team-members-inform-each-other-if-they-are-going-to-be-late-to-a-meeting",
+    "href": "project_1/group-contract.html#how-should-team-members-inform-each-other-if-they-are-going-to-be-late-to-a-meeting",
+    "title": "SDS 192 Group Contract",
+    "section": "How should team members inform each other if they are going to be late to a meeting?",
+    "text": "How should team members inform each other if they are going to be late to a meeting?\nmessage in instagram"
+  },
+  {
+    "objectID": "project_1/group-contract.html#when-is-it-ok-for-a-team-member-to-skip-a-meeting-how-soon-should-they-inform-the-group",
+    "href": "project_1/group-contract.html#when-is-it-ok-for-a-team-member-to-skip-a-meeting-how-soon-should-they-inform-the-group",
+    "title": "SDS 192 Group Contract",
+    "section": "When is it ok for a team member to skip a meeting? How soon should they inform the group?",
+    "text": "When is it ok for a team member to skip a meeting? How soon should they inform the group?\na day’s notice"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-will-you-do-if-a-group-member-is-chronically-absent-from-or-late-to-meetings",
+    "href": "project_1/group-contract.html#what-will-you-do-if-a-group-member-is-chronically-absent-from-or-late-to-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a group member is chronically absent from or late to meetings?",
+    "text": "What will you do if a group member is chronically absent from or late to meetings?\ncommunicate and then report"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-will-you-do-if-a-group-member-is-consistently-not-participating-in-meetings",
+    "href": "project_1/group-contract.html#what-will-you-do-if-a-group-member-is-consistently-not-participating-in-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a group member is consistently not participating in meetings?",
+    "text": "What will you do if a group member is consistently not participating in meetings?\ncommunicate and then report"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-are-your-expectations-for-respectful-engagement-and-communication-during-meetings-and-in-collaborative-workspaces-what-will-you-do-if-a-member-of-your-team-does-not-meet-these-expectations",
+    "href": "project_1/group-contract.html#what-are-your-expectations-for-respectful-engagement-and-communication-during-meetings-and-in-collaborative-workspaces-what-will-you-do-if-a-member-of-your-team-does-not-meet-these-expectations",
+    "title": "SDS 192 Group Contract",
+    "section": "What are your expectations for respectful engagement and communication during meetings and in collaborative workspaces? What will you do if a member of your team does not meet these expectations?",
+    "text": "What are your expectations for respectful engagement and communication during meetings and in collaborative workspaces? What will you do if a member of your team does not meet these expectations?\nCommunication, transparency, and accountability. If expectations are not met, we must communicate."
+  },
+  {
+    "objectID": "project_1/group-contract.html#how-will-you-ensure-that-all-team-members-fully-understand-assignment-expectations-what-will-you-do-if-your-team-is-unsure-how-to-complete-an-assignment",
+    "href": "project_1/group-contract.html#how-will-you-ensure-that-all-team-members-fully-understand-assignment-expectations-what-will-you-do-if-your-team-is-unsure-how-to-complete-an-assignment",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you ensure that all team members fully understand assignment expectations? What will you do if your team is unsure how to complete an assignment?",
+    "text": "How will you ensure that all team members fully understand assignment expectations? What will you do if your team is unsure how to complete an assignment?\nGo over the assignment together. Discuss the main pointers together so everyone is on the same page. If anyone is unsure about a task, we support and help each other out."
+  },
+  {
+    "objectID": "project_1/group-contract.html#how-will-you-ensure-that-all-team-members-are-contributing-equitably-to-assignments",
+    "href": "project_1/group-contract.html#how-will-you-ensure-that-all-team-members-are-contributing-equitably-to-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you ensure that all team members are contributing equitably to assignments?",
+    "text": "How will you ensure that all team members are contributing equitably to assignments?\nDiscuss the responsbilities and split the work evenly"
+  },
+  {
+    "objectID": "project_1/group-contract.html#how-soon-in-advance-of-deadlines-do-you-expect-all-team-members-to-share-drafts-of-their-work",
+    "href": "project_1/group-contract.html#how-soon-in-advance-of-deadlines-do-you-expect-all-team-members-to-share-drafts-of-their-work",
+    "title": "SDS 192 Group Contract",
+    "section": "How soon in advance of deadlines do you expect all team members to share drafts of their work?",
+    "text": "How soon in advance of deadlines do you expect all team members to share drafts of their work?\n3 days before"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-will-be-your-process-for-reviewing-each-others-work-before-submission",
+    "href": "project_1/group-contract.html#what-will-be-your-process-for-reviewing-each-others-work-before-submission",
+    "title": "SDS 192 Group Contract",
+    "section": "What will be your process for reviewing each other’s work before submission?",
+    "text": "What will be your process for reviewing each other’s work before submission?\nwe review during the meetings"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-will-you-do-if-the-quality-of-a-team-members-work-does-not-meet-the-groups-expectations-when-is-it-permissible-to-revise-another-team-members-work",
+    "href": "project_1/group-contract.html#what-will-you-do-if-the-quality-of-a-team-members-work-does-not-meet-the-groups-expectations-when-is-it-permissible-to-revise-another-team-members-work",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if the quality of a team member’s work does not meet the group’s expectations? When is it permissible to revise another team member’s work?",
+    "text": "What will you do if the quality of a team member’s work does not meet the group’s expectations? When is it permissible to revise another team member’s work?\ndiscuss and revise together"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-are-your-expectations-around-punctuality-regarding-group-deadlines-how-should-team-members-inform-each-other-if-they-need-an-extension",
+    "href": "project_1/group-contract.html#what-are-your-expectations-around-punctuality-regarding-group-deadlines-how-should-team-members-inform-each-other-if-they-need-an-extension",
+    "title": "SDS 192 Group Contract",
+    "section": "What are your expectations around punctuality regarding group deadlines? How should team members inform each other if they need an extension?",
+    "text": "What are your expectations around punctuality regarding group deadlines? How should team members inform each other if they need an extension?\nevery one is expected to keep up with the internal deadlines, communicate for extension or any support needed"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-will-you-do-if-a-student-is-consistently-late-in-submitting-draft-work",
+    "href": "project_1/group-contract.html#what-will-you-do-if-a-student-is-consistently-late-in-submitting-draft-work",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a student is consistently late in submitting draft work?",
+    "text": "What will you do if a student is consistently late in submitting draft work?\ncommunicate, assist, and report if that don’t help"
+  },
+  {
+    "objectID": "project_1/group-contract.html#what-will-you-do-if-you-discover-that-a-team-members-work-violates-the-academic-code-of-conduct",
+    "href": "project_1/group-contract.html#what-will-you-do-if-you-discover-that-a-team-members-work-violates-the-academic-code-of-conduct",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if you discover that a team member’s work violates the Academic Code of Conduct?",
+    "text": "What will you do if you discover that a team member’s work violates the Academic Code of Conduct?\nask them to revise their work and if they don’t pay heed, report"
+  },
+  {
+    "objectID": "project_1/standards.html",
+    "href": "project_1/standards.html",
+    "title": "SDS 192 Mini-Project 1 Standards",
+    "section": "",
+    "text": "Understanding Datasets\nFrom the code documentation, firstly we reviewed the background of the data set and identified the variables we would need for our investigation. For the first plot, we used the variable that gives us the cities to find the frequency distribution of the selected colleges. For the second plot, we identified the variable that gives us the retention rate and undergraduate student number\nWe specifically chose a qualitative “string” variable for the frequency distribution. For the scatterplot, we chose two quantitative variables\nThh background of the dataset along with the significance of the selected variables are elaborated on the blogpost.\n\n\nVisualization Aesthetics\nWe were able to map variables onto appropriate plot aesthetics befitting of our question, as we used both a frequency distribution and a scatter plot. We modified the graphs and implemented bold text, sized text, and made the graphs easier to read.\nFor both graphs, we were able to adjust the color to blue and red depending on the governance structures.\nWe implemented jitter into the scatter plot so that we could address overplotting, so that we could clearly see the individual points.\n\n\nPlotting Frequencies and Distributions\nA bar plot has been used to visualize the frequency distribution of the cities - a qualitative criteria - in which the selected colleges are located. Next, to find the relationship between the retention rates and undergraduate population - two quantitative characteristics - a scatterplot has been used. For both the graphs, colors have been used to explore, respectively the distribution and the relationships, of the governance structure of the selected colleges in respect to the variables used.\nBoth the graphs have chart titles, chart subtitles, axis titles, axis labels, legend labels, and caption for detailing the context.\nFinally, the findiings have been summarized on the blogpost based on the interpretation of the charts."
+  },
+  {
+    "objectID": "project_3/group-contract.html",
+    "href": "project_3/group-contract.html",
+    "title": "SDS 192 Group Contract",
+    "section": "",
+    "text": "Working in groups can be both incredibly rewarding and incredibly challenging. The most effective collaborations explicitly outline group roles, expectations, and procedures in advance to coordinate how the group will operate, to establish mechanisms of accountability, and to mitigate the risk of conflict. It is important that, throughout the semester, you address group concerns as they come up. This may involve assigning someone to check in with team members that are falling behind, establishing expectations for attending office hours and asking for help, calling team meetings to discuss issues, or reaching out to the instructor to resolve enduring and unresolved conflicts."
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-scheduling-meetings-and-hosting-zoom-calls",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-scheduling-meetings-and-hosting-zoom-calls",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for scheduling meetings and hosting Zoom calls?",
+    "text": "Who will be responsible for scheduling meetings and hosting Zoom calls?\nBoth of us"
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-facilitating-discussion-during-team-meetings",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-facilitating-discussion-during-team-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for facilitating discussion during team meetings?",
+    "text": "Who will be responsible for facilitating discussion during team meetings?\nBoth of us"
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-taking-notes-and-recording-decisions-during-meetings",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-taking-notes-and-recording-decisions-during-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for taking notes and recording decisions during meetings?",
+    "text": "Who will be responsible for taking notes and recording decisions during meetings?\nBoth of us (on shared Google doc)"
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-emailing-the-professor-with-questions",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-emailing-the-professor-with-questions",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for emailing the professor with questions?",
+    "text": "Who will be responsible for emailing the professor with questions?\nBoth of us"
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-requesting-group-assignment-extensions",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-requesting-group-assignment-extensions",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for requesting group assignment extensions?",
+    "text": "Who will be responsible for requesting group assignment extensions?\nEmily"
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-setting-deadlines-for-drafts",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-setting-deadlines-for-drafts",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for setting deadlines for drafts?",
+    "text": "Who will be responsible for setting deadlines for drafts?\nMaisha"
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-checking-in-with-team-members-when-drafts-are-late",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-checking-in-with-team-members-when-drafts-are-late",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for checking in with team members when drafts are late?",
+    "text": "Who will be responsible for checking in with team members when drafts are late?\nMaisha"
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-reviewing-all-materials-before-submission",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-reviewing-all-materials-before-submission",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for reviewing all materials before submission?",
+    "text": "Who will be responsible for reviewing all materials before submission?\nBoth of us"
+  },
+  {
+    "objectID": "project_3/group-contract.html#who-will-be-responsible-for-submitting-assignments",
+    "href": "project_3/group-contract.html#who-will-be-responsible-for-submitting-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for submitting assignments?",
+    "text": "Who will be responsible for submitting assignments?\nBoth of us"
+  },
+  {
+    "objectID": "project_3/group-contract.html#where-will-the-team-keep-meeting-notes",
+    "href": "project_3/group-contract.html#where-will-the-team-keep-meeting-notes",
+    "title": "SDS 192 Group Contract",
+    "section": "Where will the team keep meeting notes?",
+    "text": "Where will the team keep meeting notes?\nGoogle Docs"
+  },
+  {
+    "objectID": "project_3/group-contract.html#where-will-the-team-store-drafts-of-assignments",
+    "href": "project_3/group-contract.html#where-will-the-team-store-drafts-of-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "Where will the team store drafts of assignments?",
+    "text": "Where will the team store drafts of assignments?\nGoogle Drive and GitHub"
+  },
+  {
+    "objectID": "project_3/group-contract.html#through-what-channels-will-the-team-communicate-when-not-meeting",
+    "href": "project_3/group-contract.html#through-what-channels-will-the-team-communicate-when-not-meeting",
+    "title": "SDS 192 Group Contract",
+    "section": "Through what channels will the team communicate when not meeting?",
+    "text": "Through what channels will the team communicate when not meeting?\nInstagram and GitHub"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-is-the-expected-response-time-for-emails-and-messages",
+    "href": "project_3/group-contract.html#what-is-the-expected-response-time-for-emails-and-messages",
+    "title": "SDS 192 Group Contract",
+    "section": "What is the expected response time for emails and messages?",
+    "text": "What is the expected response time for emails and messages?\nA day"
+  },
+  {
+    "objectID": "project_3/group-contract.html#how-often-will-the-team-meet",
+    "href": "project_3/group-contract.html#how-often-will-the-team-meet",
+    "title": "SDS 192 Group Contract",
+    "section": "How often will the team meet?",
+    "text": "How often will the team meet?\nAt least once a week"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-daystimes-will-the-team-meet",
+    "href": "project_3/group-contract.html#what-daystimes-will-the-team-meet",
+    "title": "SDS 192 Group Contract",
+    "section": "What days/times will the team meet?",
+    "text": "What days/times will the team meet?\nThursday evening (or weekends if not)"
+  },
+  {
+    "objectID": "project_3/group-contract.html#how-long-will-meetings-be",
+    "href": "project_3/group-contract.html#how-long-will-meetings-be",
+    "title": "SDS 192 Group Contract",
+    "section": "How long will meetings be?",
+    "text": "How long will meetings be?\n1-2 hours"
+  },
+  {
+    "objectID": "project_3/group-contract.html#how-will-you-make-decisions-during-meetings-e.g.-consensus-a-vote",
+    "href": "project_3/group-contract.html#how-will-you-make-decisions-during-meetings-e.g.-consensus-a-vote",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you make decisions during meetings (e.g. consensus, a vote)?",
+    "text": "How will you make decisions during meetings (e.g. consensus, a vote)?\nConsensus"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-strategies-will-you-use-to-stay-on-task-during-meetings",
+    "href": "project_3/group-contract.html#what-strategies-will-you-use-to-stay-on-task-during-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What strategies will you use to stay on task during meetings?",
+    "text": "What strategies will you use to stay on task during meetings?\nHave an agenda and to-do list"
+  },
+  {
+    "objectID": "project_3/group-contract.html#how-should-team-members-inform-each-other-if-they-are-going-to-be-late-to-a-meeting",
+    "href": "project_3/group-contract.html#how-should-team-members-inform-each-other-if-they-are-going-to-be-late-to-a-meeting",
+    "title": "SDS 192 Group Contract",
+    "section": "How should team members inform each other if they are going to be late to a meeting?",
+    "text": "How should team members inform each other if they are going to be late to a meeting?\nMessage on Instagram"
+  },
+  {
+    "objectID": "project_3/group-contract.html#when-is-it-ok-for-a-team-member-to-skip-a-meeting-how-soon-should-they-inform-the-group",
+    "href": "project_3/group-contract.html#when-is-it-ok-for-a-team-member-to-skip-a-meeting-how-soon-should-they-inform-the-group",
+    "title": "SDS 192 Group Contract",
+    "section": "When is it ok for a team member to skip a meeting? How soon should they inform the group?",
+    "text": "When is it ok for a team member to skip a meeting? How soon should they inform the group?\nA day’s notice"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-will-you-do-if-a-group-member-is-chronically-absent-from-or-late-to-meetings",
+    "href": "project_3/group-contract.html#what-will-you-do-if-a-group-member-is-chronically-absent-from-or-late-to-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a group member is chronically absent from or late to meetings?",
+    "text": "What will you do if a group member is chronically absent from or late to meetings?\nCommunicate and then report"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-will-you-do-if-a-group-member-is-consistently-not-participating-in-meetings",
+    "href": "project_3/group-contract.html#what-will-you-do-if-a-group-member-is-consistently-not-participating-in-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a group member is consistently not participating in meetings?",
+    "text": "What will you do if a group member is consistently not participating in meetings?\nCommunicate and then report"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-are-your-expectations-for-respectful-engagement-and-communication-during-meetings-and-in-collaborative-workspaces-what-will-you-do-if-a-member-of-your-team-does-not-meet-these-expectations",
+    "href": "project_3/group-contract.html#what-are-your-expectations-for-respectful-engagement-and-communication-during-meetings-and-in-collaborative-workspaces-what-will-you-do-if-a-member-of-your-team-does-not-meet-these-expectations",
+    "title": "SDS 192 Group Contract",
+    "section": "What are your expectations for respectful engagement and communication during meetings and in collaborative workspaces? What will you do if a member of your team does not meet these expectations?",
+    "text": "What are your expectations for respectful engagement and communication during meetings and in collaborative workspaces? What will you do if a member of your team does not meet these expectations?\nCommunication, transparency, and accountability. If expectations are not met, we must communicate."
+  },
+  {
+    "objectID": "project_3/group-contract.html#how-will-you-ensure-that-all-team-members-fully-understand-assignment-expectations-what-will-you-do-if-your-team-is-unsure-how-to-complete-an-assignment",
+    "href": "project_3/group-contract.html#how-will-you-ensure-that-all-team-members-fully-understand-assignment-expectations-what-will-you-do-if-your-team-is-unsure-how-to-complete-an-assignment",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you ensure that all team members fully understand assignment expectations? What will you do if your team is unsure how to complete an assignment?",
+    "text": "How will you ensure that all team members fully understand assignment expectations? What will you do if your team is unsure how to complete an assignment?\nCommunication, transparency, and accountability. If expectations are not met, we must communicate."
+  },
+  {
+    "objectID": "project_3/group-contract.html#how-will-you-ensure-that-all-team-members-are-contributing-equitably-to-assignments",
+    "href": "project_3/group-contract.html#how-will-you-ensure-that-all-team-members-are-contributing-equitably-to-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you ensure that all team members are contributing equitably to assignments?",
+    "text": "How will you ensure that all team members are contributing equitably to assignments?\nDiscuss the responsbilities and split the work evenly"
+  },
+  {
+    "objectID": "project_3/group-contract.html#how-soon-in-advance-of-deadlines-do-you-expect-all-team-members-to-share-drafts-of-their-work",
+    "href": "project_3/group-contract.html#how-soon-in-advance-of-deadlines-do-you-expect-all-team-members-to-share-drafts-of-their-work",
+    "title": "SDS 192 Group Contract",
+    "section": "How soon in advance of deadlines do you expect all team members to share drafts of their work?",
+    "text": "How soon in advance of deadlines do you expect all team members to share drafts of their work?\n3 days before"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-will-be-your-process-for-reviewing-each-others-work-before-submission",
+    "href": "project_3/group-contract.html#what-will-be-your-process-for-reviewing-each-others-work-before-submission",
+    "title": "SDS 192 Group Contract",
+    "section": "What will be your process for reviewing each other’s work before submission?",
+    "text": "What will be your process for reviewing each other’s work before submission?\nWe review during meetings or on GitHub after communicating through Instagram"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-will-you-do-if-the-quality-of-a-team-members-work-does-not-meet-the-groups-expectations-when-is-it-permissible-to-revise-another-team-members-work",
+    "href": "project_3/group-contract.html#what-will-you-do-if-the-quality-of-a-team-members-work-does-not-meet-the-groups-expectations-when-is-it-permissible-to-revise-another-team-members-work",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if the quality of a team member’s work does not meet the group’s expectations? When is it permissible to revise another team member’s work?",
+    "text": "What will you do if the quality of a team member’s work does not meet the group’s expectations? When is it permissible to revise another team member’s work?\nDiscuss and revise together"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-are-your-expectations-around-punctuality-regarding-group-deadlines-how-should-team-members-inform-each-other-if-they-need-an-extension",
+    "href": "project_3/group-contract.html#what-are-your-expectations-around-punctuality-regarding-group-deadlines-how-should-team-members-inform-each-other-if-they-need-an-extension",
+    "title": "SDS 192 Group Contract",
+    "section": "What are your expectations around punctuality regarding group deadlines? How should team members inform each other if they need an extension?",
+    "text": "What are your expectations around punctuality regarding group deadlines? How should team members inform each other if they need an extension?\nEveryone is expected to keep up with internal deadlines, communicate for extension or any support needed"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-will-you-do-if-a-student-is-consistently-late-in-submitting-draft-work",
+    "href": "project_3/group-contract.html#what-will-you-do-if-a-student-is-consistently-late-in-submitting-draft-work",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a student is consistently late in submitting draft work?",
+    "text": "What will you do if a student is consistently late in submitting draft work?\nCommunicate, assist, and report if it doesn’t help"
+  },
+  {
+    "objectID": "project_3/group-contract.html#what-will-you-do-if-you-discover-that-a-team-members-work-violates-the-academic-code-of-conduct",
+    "href": "project_3/group-contract.html#what-will-you-do-if-you-discover-that-a-team-members-work-violates-the-academic-code-of-conduct",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if you discover that a team member’s work violates the Academic Code of Conduct?",
+    "text": "What will you do if you discover that a team member’s work violates the Academic Code of Conduct?\nAsk them to revise their work and if they don’t pay heed, report"
+  },
+  {
+    "objectID": "project_3/contributions.html",
+    "href": "project_3/contributions.html",
+    "title": "SDS 192 Mini-Project 2 Contributions",
+    "section": "",
+    "text": "Group Member 1: Maisha\n\nUSA 3 plots\nGroup Contract\nContributions\nBlogpost\n\n\n\nGroup Member 2: Emily\n\nNew England 3 plots\nGroup contract\nBlogpost\nStandards"
+  },
+  {
+    "objectID": "project_3/data_for_mapping.html",
+    "href": "project_3/data_for_mapping.html",
+    "title": "Ideas for Mapping Data",
+    "section": "",
+    "text": "There is a lot of data in the world, pick a set that you are comfortable with by the end of the first project day. You can go down a rabbit hole after the semester is over."
+  },
+  {
+    "objectID": "project_3/data_for_mapping.html#caution",
+    "href": "project_3/data_for_mapping.html#caution",
+    "title": "Ideas for Mapping Data",
+    "section": "",
+    "text": "There is a lot of data in the world, pick a set that you are comfortable with by the end of the first project day. You can go down a rabbit hole after the semester is over."
+  },
+  {
+    "objectID": "project_3/data_for_mapping.html#map-data-ideas-for-project-3",
+    "href": "project_3/data_for_mapping.html#map-data-ideas-for-project-3",
+    "title": "Ideas for Mapping Data",
+    "section": "Map data ideas for project 3",
+    "text": "Map data ideas for project 3\n\nEPA Toxic Release Inventory (TRI)\nhttps://www.epa.gov/toxics-release-inventory-tri-program/tri-basic-data-files-calendar-years-1987-present\n\n\nCDC Flu View Interactive.\nhttps://gis.cdc.gov/grasp/fluview/fluportaldashboard.html\n\n\nMassachusetts GIS Data\nhttps://www.mass.gov/info-details/massgis-data-layers\nOther states also have GIS Data\n\n\nSearch Geo Spatial Analysis on Kaggle\nhttps://www.kaggle.com/datasets?sort=usability&tags=13206-Geospatial+Analysis\n(Sort by usability)"
+  },
+  {
+    "objectID": "project_2/contributions.html",
+    "href": "project_2/contributions.html",
+    "title": "SDS 192 Mini-Project 2 Contributions",
+    "section": "",
+    "text": "Group Member 1: Maisha\nFill response here…\n\n\nGroup Member 2: Emily\nFill response here…\n\n\nGroup Member 3: NAME\nFill response here…"
+  },
+  {
+    "objectID": "project_2/fec-analysis.html",
+    "href": "project_2/fec-analysis.html",
+    "title": "SDS 192 Mini-Project 2",
+    "section": "",
+    "text": "This project uses the the data published by the U.S Federal Election in the 2015-2016 election cycle. The aim is explore the expenditures and committee contributions for Democrat and Republicans in the presidential election.\nWe start by trying to find any correlation between the total amount of money transacted and total votes.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nIn general, the number of total votes seems to be similar for increasing number of money transacted We do not see any significant relartionship.\nPart 2 of the analysis looks into the transactions made from the committees for candidates running in the presidential election in Pennsylvania. The two candidates running here in 2016 were Hillary Clinton and Donald Trump - the latter winning in the state. For our analysis, we get the total transaction amount for each category of transaction type for each candidate. Our initial hypothesis was that we will find some positive correlation with the amount of transactions in favor with the election result. However, we found out the highest transaction was made for Donald Trump campaign opposing his candidacy (24A).\n\n\n\n\n\n\n\n\n\nIndependent expenditure advocating the candidacy (24E) was almost similar for both the candidates. Clinton’s campaign had significantly more expenditure for communication (24F) than that of Trump’s. However, the amount of money spent against Trump’s candidacy exceeds that of Clinton’s by a huge difference. Nevertheless, despite these factors, Trump had a successful race in Pennsylvania. The bar chart effectively helps us to visualise this insight."
+  },
+  {
+    "objectID": "project_2/standards.html",
+    "href": "project_2/standards.html",
+    "title": "SDS 192 Mini-Project 2 Standards",
+    "section": "",
+    "text": "Transforming Data\nFor analysis 1,\nFor analysis 2, we aggregated the contribution data with presidential election result using the candidate IDs. To narrow down our analysis, we filtered the data about Democrat and Republic candidates running in Pennsylvania. Finally, we grouped the data by candidate IDs and transaction type to calculate the total transaction amount under each category for each candidate. To easily interpret the data in bar chart, we recoded the candidate IDs to their names and transaction type to their descriptions.\n\n\nJoining Data\nFor analysis 2, we did ‘inner_join’ to aggregate the data from contributions and presidential election result. The common variable for the join was candidate id. Therefore, we have the data from committee contributions and presidential election for all the presidential candidates.\n\n\nGitHub\nFill response here…"
+  },
+  {
+    "objectID": "project_2/group-contract.html",
+    "href": "project_2/group-contract.html",
+    "title": "SDS 192 Group Contract",
+    "section": "",
+    "text": "Working in groups can be both incredibly rewarding and incredibly challenging. The most effective collaborations explicitly outline group roles, expectations, and procedures in advance to coordinate how the group will operate, to establish mechanisms of accountability, and to mitigate the risk of conflict. It is important that, throughout the semester, you address group concerns as they come up. This may involve assigning someone to check in with team members that are falling behind, establishing expectations for attending office hours and asking for help, calling team meetings to discuss issues, or reaching out to the instructor to resolve enduring and unresolved conflicts."
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-scheduling-meetings-and-hosting-zoom-calls",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-scheduling-meetings-and-hosting-zoom-calls",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for scheduling meetings and hosting Zoom calls?",
+    "text": "Who will be responsible for scheduling meetings and hosting Zoom calls?\nboth of us"
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-facilitating-discussion-during-team-meetings",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-facilitating-discussion-during-team-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for facilitating discussion during team meetings?",
+    "text": "Who will be responsible for facilitating discussion during team meetings?\nboth of us"
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-taking-notes-and-recording-decisions-during-meetings",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-taking-notes-and-recording-decisions-during-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for taking notes and recording decisions during meetings?",
+    "text": "Who will be responsible for taking notes and recording decisions during meetings?\nboth of us (on shared google doc)"
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-emailing-the-professor-with-questions",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-emailing-the-professor-with-questions",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for emailing the professor with questions?",
+    "text": "Who will be responsible for emailing the professor with questions?\nEmily"
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-requesting-group-assignment-extensions",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-requesting-group-assignment-extensions",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for requesting group assignment extensions?",
+    "text": "Who will be responsible for requesting group assignment extensions?\nEmily"
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-setting-deadlines-for-drafts",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-setting-deadlines-for-drafts",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for setting deadlines for drafts?",
+    "text": "Who will be responsible for setting deadlines for drafts?\nMaisha"
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-checking-in-with-team-members-when-drafts-are-late",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-checking-in-with-team-members-when-drafts-are-late",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for checking in with team members when drafts are late?",
+    "text": "Who will be responsible for checking in with team members when drafts are late?\nMaisha"
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-reviewing-all-materials-before-submission",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-reviewing-all-materials-before-submission",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for reviewing all materials before submission?",
+    "text": "Who will be responsible for reviewing all materials before submission?\nboth of us"
+  },
+  {
+    "objectID": "project_2/group-contract.html#who-will-be-responsible-for-submitting-assignments",
+    "href": "project_2/group-contract.html#who-will-be-responsible-for-submitting-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "Who will be responsible for submitting assignments?",
+    "text": "Who will be responsible for submitting assignments?\nboth of us from individual branches"
+  },
+  {
+    "objectID": "project_2/group-contract.html#where-will-the-team-keep-meeting-notes",
+    "href": "project_2/group-contract.html#where-will-the-team-keep-meeting-notes",
+    "title": "SDS 192 Group Contract",
+    "section": "Where will the team keep meeting notes?",
+    "text": "Where will the team keep meeting notes?\ngoogle docs"
+  },
+  {
+    "objectID": "project_2/group-contract.html#where-will-the-team-store-drafts-of-assignments",
+    "href": "project_2/group-contract.html#where-will-the-team-store-drafts-of-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "Where will the team store drafts of assignments?",
+    "text": "Where will the team store drafts of assignments?\ngoogle drive and github"
+  },
+  {
+    "objectID": "project_2/group-contract.html#through-what-channels-will-the-team-communicate-when-not-meeting",
+    "href": "project_2/group-contract.html#through-what-channels-will-the-team-communicate-when-not-meeting",
+    "title": "SDS 192 Group Contract",
+    "section": "Through what channels will the team communicate when not meeting?",
+    "text": "Through what channels will the team communicate when not meeting?\nInstagram and Github"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-is-the-expected-response-time-for-emails-and-messages",
+    "href": "project_2/group-contract.html#what-is-the-expected-response-time-for-emails-and-messages",
+    "title": "SDS 192 Group Contract",
+    "section": "What is the expected response time for emails and messages?",
+    "text": "What is the expected response time for emails and messages?\na day"
+  },
+  {
+    "objectID": "project_2/group-contract.html#how-often-will-the-team-meet",
+    "href": "project_2/group-contract.html#how-often-will-the-team-meet",
+    "title": "SDS 192 Group Contract",
+    "section": "How often will the team meet?",
+    "text": "How often will the team meet?\nat least once a week"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-daystimes-will-the-team-meet",
+    "href": "project_2/group-contract.html#what-daystimes-will-the-team-meet",
+    "title": "SDS 192 Group Contract",
+    "section": "What days/times will the team meet?",
+    "text": "What days/times will the team meet?\nThursday evening (or weekends if not)"
+  },
+  {
+    "objectID": "project_2/group-contract.html#how-long-will-meetings-be",
+    "href": "project_2/group-contract.html#how-long-will-meetings-be",
+    "title": "SDS 192 Group Contract",
+    "section": "How long will meetings be?",
+    "text": "How long will meetings be?\n1-2 hours"
+  },
+  {
+    "objectID": "project_2/group-contract.html#how-will-you-make-decisions-during-meetings-e.g.-consensus-a-vote",
+    "href": "project_2/group-contract.html#how-will-you-make-decisions-during-meetings-e.g.-consensus-a-vote",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you make decisions during meetings (e.g. consensus, a vote)?",
+    "text": "How will you make decisions during meetings (e.g. consensus, a vote)?\nconsensus"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-strategies-will-you-use-to-stay-on-task-during-meetings",
+    "href": "project_2/group-contract.html#what-strategies-will-you-use-to-stay-on-task-during-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What strategies will you use to stay on task during meetings?",
+    "text": "What strategies will you use to stay on task during meetings?\nhave an agenda and to-do list"
+  },
+  {
+    "objectID": "project_2/group-contract.html#how-should-team-members-inform-each-other-if-they-are-going-to-be-late-to-a-meeting",
+    "href": "project_2/group-contract.html#how-should-team-members-inform-each-other-if-they-are-going-to-be-late-to-a-meeting",
+    "title": "SDS 192 Group Contract",
+    "section": "How should team members inform each other if they are going to be late to a meeting?",
+    "text": "How should team members inform each other if they are going to be late to a meeting?\nmessage in instagram"
+  },
+  {
+    "objectID": "project_2/group-contract.html#when-is-it-ok-for-a-team-member-to-skip-a-meeting-how-soon-should-they-inform-the-group",
+    "href": "project_2/group-contract.html#when-is-it-ok-for-a-team-member-to-skip-a-meeting-how-soon-should-they-inform-the-group",
+    "title": "SDS 192 Group Contract",
+    "section": "When is it ok for a team member to skip a meeting? How soon should they inform the group?",
+    "text": "When is it ok for a team member to skip a meeting? How soon should they inform the group?\na day’s notice"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-will-you-do-if-a-group-member-is-chronically-absent-from-or-late-to-meetings",
+    "href": "project_2/group-contract.html#what-will-you-do-if-a-group-member-is-chronically-absent-from-or-late-to-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a group member is chronically absent from or late to meetings?",
+    "text": "What will you do if a group member is chronically absent from or late to meetings?\ncommunicate and then report"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-will-you-do-if-a-group-member-is-consistently-not-participating-in-meetings",
+    "href": "project_2/group-contract.html#what-will-you-do-if-a-group-member-is-consistently-not-participating-in-meetings",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a group member is consistently not participating in meetings?",
+    "text": "What will you do if a group member is consistently not participating in meetings?\ncommunicate and then report"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-are-your-expectations-for-respectful-engagement-and-communication-during-meetings-and-in-collaborative-workspaces-what-will-you-do-if-a-member-of-your-team-does-not-meet-these-expectations",
+    "href": "project_2/group-contract.html#what-are-your-expectations-for-respectful-engagement-and-communication-during-meetings-and-in-collaborative-workspaces-what-will-you-do-if-a-member-of-your-team-does-not-meet-these-expectations",
+    "title": "SDS 192 Group Contract",
+    "section": "What are your expectations for respectful engagement and communication during meetings and in collaborative workspaces? What will you do if a member of your team does not meet these expectations?",
+    "text": "What are your expectations for respectful engagement and communication during meetings and in collaborative workspaces? What will you do if a member of your team does not meet these expectations?\nCommunication, transparency, and accountability. If expectations are not met, we must communicate."
+  },
+  {
+    "objectID": "project_2/group-contract.html#how-will-you-ensure-that-all-team-members-fully-understand-assignment-expectations-what-will-you-do-if-your-team-is-unsure-how-to-complete-an-assignment",
+    "href": "project_2/group-contract.html#how-will-you-ensure-that-all-team-members-fully-understand-assignment-expectations-what-will-you-do-if-your-team-is-unsure-how-to-complete-an-assignment",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you ensure that all team members fully understand assignment expectations? What will you do if your team is unsure how to complete an assignment?",
+    "text": "How will you ensure that all team members fully understand assignment expectations? What will you do if your team is unsure how to complete an assignment?\nGo over the assignment together. Discuss the main pointers together so everyone is on the same page. If anyone is unsure about a task, we support and help each other out."
+  },
+  {
+    "objectID": "project_2/group-contract.html#how-will-you-ensure-that-all-team-members-are-contributing-equitably-to-assignments",
+    "href": "project_2/group-contract.html#how-will-you-ensure-that-all-team-members-are-contributing-equitably-to-assignments",
+    "title": "SDS 192 Group Contract",
+    "section": "How will you ensure that all team members are contributing equitably to assignments?",
+    "text": "How will you ensure that all team members are contributing equitably to assignments?\nDiscuss the responsbilities and split the work evenly"
+  },
+  {
+    "objectID": "project_2/group-contract.html#how-soon-in-advance-of-deadlines-do-you-expect-all-team-members-to-share-drafts-of-their-work",
+    "href": "project_2/group-contract.html#how-soon-in-advance-of-deadlines-do-you-expect-all-team-members-to-share-drafts-of-their-work",
+    "title": "SDS 192 Group Contract",
+    "section": "How soon in advance of deadlines do you expect all team members to share drafts of their work?",
+    "text": "How soon in advance of deadlines do you expect all team members to share drafts of their work?\n3 days before"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-will-be-your-process-for-reviewing-each-others-work-before-submission",
+    "href": "project_2/group-contract.html#what-will-be-your-process-for-reviewing-each-others-work-before-submission",
+    "title": "SDS 192 Group Contract",
+    "section": "What will be your process for reviewing each other’s work before submission?",
+    "text": "What will be your process for reviewing each other’s work before submission?\nwe review during the meetings"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-will-you-do-if-the-quality-of-a-team-members-work-does-not-meet-the-groups-expectations-when-is-it-permissible-to-revise-another-team-members-work",
+    "href": "project_2/group-contract.html#what-will-you-do-if-the-quality-of-a-team-members-work-does-not-meet-the-groups-expectations-when-is-it-permissible-to-revise-another-team-members-work",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if the quality of a team member’s work does not meet the group’s expectations? When is it permissible to revise another team member’s work?",
+    "text": "What will you do if the quality of a team member’s work does not meet the group’s expectations? When is it permissible to revise another team member’s work?\ndiscuss and revise together"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-are-your-expectations-around-punctuality-regarding-group-deadlines-how-should-team-members-inform-each-other-if-they-need-an-extension",
+    "href": "project_2/group-contract.html#what-are-your-expectations-around-punctuality-regarding-group-deadlines-how-should-team-members-inform-each-other-if-they-need-an-extension",
+    "title": "SDS 192 Group Contract",
+    "section": "What are your expectations around punctuality regarding group deadlines? How should team members inform each other if they need an extension?",
+    "text": "What are your expectations around punctuality regarding group deadlines? How should team members inform each other if they need an extension?\nevery one is expected to keep up with the internal deadlines, communicate for extension or any support needed"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-will-you-do-if-a-student-is-consistently-late-in-submitting-draft-work",
+    "href": "project_2/group-contract.html#what-will-you-do-if-a-student-is-consistently-late-in-submitting-draft-work",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if a student is consistently late in submitting draft work?",
+    "text": "What will you do if a student is consistently late in submitting draft work?\ncommunicate, assist, and report if that don’t help"
+  },
+  {
+    "objectID": "project_2/group-contract.html#what-will-you-do-if-you-discover-that-a-team-members-work-violates-the-academic-code-of-conduct",
+    "href": "project_2/group-contract.html#what-will-you-do-if-you-discover-that-a-team-members-work-violates-the-academic-code-of-conduct",
+    "title": "SDS 192 Group Contract",
+    "section": "What will you do if you discover that a team member’s work violates the Academic Code of Conduct?",
+    "text": "What will you do if you discover that a team member’s work violates the Academic Code of Conduct?\nask them to revise their work and if they don’t pay heed, report"
+  },
+  {
+    "objectID": "project_3/standards.html",
+    "href": "project_3/standards.html",
+    "title": "SDS 192 Mini-Project 2 Standards",
+    "section": "",
+    "text": "Iteration\nFill response here…\n\n\nFunction creation\nFill response here…\n\n\nData Wrangling on multiple tables.\nFill response here…\n\n\nMapping\nFill response here…"
+  },
+  {
+    "objectID": "project_3/mapping.html",
+    "href": "project_3/mapping.html",
+    "title": "SDS 192 Project 3",
+    "section": "",
+    "text": "This project maps out the Late Stage Breast Cancer Incidence Rates with state-level age-adjusted data from Lyman (2020). The data in this dataset are segmented by age of the women. For this project, we have taken the data for All Ages, Ages Under 50 and Ages 50 & Over. To note, this data explicitly states that it does not include Nevada and Puerto Rico, but the dataset does not mention that Indiana is missing data, so we are taking all the states (including Hawaii and Alaska) besides Nevada and Indiana for our analysis. With this data, we aimed to find whether there was a general trend of breast cancer across the USA and New England.\n\nAcross the USA…\nFor the first segment of our analysis, we explored the late stage cancer incidence rates across all the states in the USA. For all age averages, southeastern states of Mississippi, Louisiana and Georgia shows the highest incidence. Massachusetts and Arizona shows the least incidence. For under 50 age averages, the northern and eastern states show the highest incidence. Interestingly, South Dakota has one of the minimum incidence rates unlike the surrounding states. The South has a general trend of least incidence. For over 50, the trend is similar to the all ages average with Mississippi, Louisiana and Georgia having the highest incidence.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAcross New England…\nFor the second segment of our analysis, we explored the late stage cancer incidence rates across the New England area in the USA. For all age averages, New Hampshire and Connecticut had the highest incidence rates in the New England area, while Massachusetts had the lowest incidence rate. For under 50 age averages, Connecticut and Rhode Island show the highest incidence, while Massachusetts remains with the lowest rate. For over 50,the trend remains similar to the previous trend with all ages and under 50, showing New Hampshire with the highest rate, while Connecticut is second highest, similar to the trend in all ages. As always, Massachusetts remains the lowest incidence rate.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOverall, some states show a general trend of late stage breast cancer incidence across all age groups. However, we cannot find a direct relationship between the cancer incidence rates and the geographical or population size. Therefore, we hypothesize that some other influencing factors should exist. Further metadata is required for more granular analysis. It may also help if we had data from Nevada and Indiana.\n\n\n\n\n\nReferences\n\nLyman, Jeremy. 2020. “NCI State Late Stage Breast Cancer Incidence Rates.” National Cancer Institute. https://hub.arcgis.com/datasets/NCI::nci-state-late-stage-breast-cancer-incidence-rates/about."
+  },
+  {
+    "objectID": "project_1/scorecard_analysis.html",
+    "href": "project_1/scorecard_analysis.html",
+    "title": "SDS 192 Mini-Project 1",
+    "section": "",
+    "text": "We investigated this question using the College Scorecard dataset. This data aims to increase transparency and help prospective students and families compare colleges based on their goals and requirements. The College Scorecard was produced by the U.S. Department of Education taking data from the federal reporting from institutions, data on federal financial aid, and tax information. These were taken directly or derived from the data reported to the Integrated Postsecondary Education Data System (IPEDS).\nFrom the dataset, we will be investigating our question using the data of 50 colleges in Massachusetts with the largest undergraduate student population. Delving deeper, we will be exploring the governance structure and retention rates. Firstly, we will group our selection of colleges based on the cities these are located in and then visualize the distribution of the type of governance structures – whether the colleges are Public, Private Non-profit, or Private For-profit. Then, we will examine the correlation between retention rates and the undergraduate population based on the type of institution to help us draw conclusions from the data.\n\n\n\n\n\n\n\n\n\n\n\nThe first plot explores the governance structure of the largest 50 colleges in different cities of Massachusetts. The largest 50 schools are grouped with the cities these are located in and the length of the bars indicates the number of Public, Private Non-Profit, and Private For-Profit universities in each of those cities. Notably, there are no Private For-profit college in our selection, hence the bar chart omits the category. The plot concludes Boston has the highest number of big schools, followed by Worcester, Springfield, and Cambridge. The colors of the bars indicate that overall the number of public schools is higher than the number of private colleges in our selection of the largest MA colleges.\n\n\n\n\n\n\n\n\n\n\n\n\nThe second plot explores the correlation between the undergraduate population and the retention rate. For public colleges, we can see an inconclusive positive correlation between a larger undergraduate population and a higher retention rate as the points are scattered, showing that larger public universities are likely to have a higher retention rate. However, the points for private nonprofit colleges are in a larger cluster, signifying that there isn’t a direct and obvious correlation between undergraduate student body size and retention rate.\nAssumptions and commitments that informed this data set include assuming that the colleges participate in Title IV programs (or meet similar criteria to participating institutions), and that these colleges report wholly correct data to the IPEDS. However, a lot of the data is missing as colleges did not report some data to the IPEDS. The educational institutions and organizations collecting the data have had a say regarding this dataset, and it is hard to find reliable data if the institutions don’t report their information. The benefits and harms of this dataset may be (shouldn’t be, but) that institutions can pick and choose the data they present, so that either data is missing, or it is positively skewed towards certain institutions when it’s beneficial."
+  },
+  {
+    "objectID": "project_1/contributions.html",
+    "href": "project_1/contributions.html",
+    "title": "SDS 192 Mini-Project 1 Contributions",
+    "section": "",
+    "text": "Emily\n\nMaking API key\nContribute to write the group contract\nPlot 2: The graph and blogpost\nBlogpost introduction and conclusion\nWrite up the “Understanding Datasets” and “Plotting Frequencies and Distributions” standard\n\n\n\nGroup Member 2\n\nContribute to write the group contract\nPlot 1: The graph and blogpost\nCode for selecting the top 50 and formatting both graph-\nReview blogpost\nWrite up the “Visualization Aesthetics” standard"
+  },
+  {
+    "objectID": "project_1/scorecard_analysis.html#does-the-governance-structure-of-the-largest-colleges-in-massachusetts-affect-the-retention-rate",
+    "href": "project_1/scorecard_analysis.html#does-the-governance-structure-of-the-largest-colleges-in-massachusetts-affect-the-retention-rate",
+    "title": "SDS 192 Mini-Project 1",
+    "section": "",
+    "text": "We investigated this question using the College Scorecard dataset. This data aims to increase transparency and help prospective students and families compare colleges based on their goals and requirements. The College Scorecard was produced by the U.S. Department of Education taking data from the federal reporting from institutions, data on federal financial aid, and tax information. These were taken directly or derived from the data reported to the Integrated Postsecondary Education Data System (IPEDS).\nFrom the dataset, we will be investigating our question using the data of 50 colleges in Massachusetts with the largest undergraduate student population. Delving deeper, we will be exploring the governance structure and retention rates. Firstly, we will group our selection of colleges based on the cities these are located in and then visualize the distribution of the type of governance structures – whether the colleges are Public, Private Non-profit, or Private For-profit. Then, we will examine the correlation between retention rates and the undergraduate population based on the type of institution to help us draw conclusions from the data.\n\n\n\n\n\n\n\n\n\n\n\nThe first plot explores the governance structure of the largest 50 colleges in different cities of Massachusetts. The largest 50 schools are grouped with the cities these are located in and the length of the bars indicates the number of Public, Private Non-Profit, and Private For-Profit universities in each of those cities. Notably, there are no Private For-profit college in our selection, hence the bar chart omits the category. The plot concludes Boston has the highest number of big schools, followed by Worcester, Springfield, and Cambridge. The colors of the bars indicate that overall the number of public schools is higher than the number of private colleges in our selection of the largest MA colleges.\n\n\n\n\n\n\n\n\n\n\n\n\nThe second plot explores the correlation between the undergraduate population and the retention rate. For public colleges, we can see an inconclusive positive correlation between a larger undergraduate population and a higher retention rate as the points are scattered, showing that larger public universities are likely to have a higher retention rate. However, the points for private nonprofit colleges are in a larger cluster, signifying that there isn’t a direct and obvious correlation between undergraduate student body size and retention rate.\nAssumptions and commitments that informed this data set include assuming that the colleges participate in Title IV programs (or meet similar criteria to participating institutions), and that these colleges report wholly correct data to the IPEDS. However, a lot of the data is missing as colleges did not report some data to the IPEDS. The educational institutions and organizations collecting the data have had a say regarding this dataset, and it is hard to find reliable data if the institutions don’t report their information. The benefits and harms of this dataset may be (shouldn’t be, but) that institutions can pick and choose the data they present, so that either data is missing, or it is positively skewed towards certain institutions when it’s beneficial."
+  },
+  {
+    "objectID": "project_1/scorecard_analysis.html#does-the-governance-structure-of-the-colleges-with-large-number-of-undergraduate-students-in-massachusetts-affect-their-retention-rate",
+    "href": "project_1/scorecard_analysis.html#does-the-governance-structure-of-the-colleges-with-large-number-of-undergraduate-students-in-massachusetts-affect-their-retention-rate",
+    "title": "SDS 192 Mini-Project 1",
+    "section": "",
+    "text": "We investigated this question using the College Scorecard dataset. This data aims to increase transparency and help prospective students and families compare colleges based on their goals and requirements. The College Scorecard was produced by the U.S. Department of Education taking data from the federal reporting from institutions, data on federal financial aid, and tax information. These were taken directly or derived from the data reported to the Integrated Postsecondary Education Data System (IPEDS).\nFrom the dataset, we will be investigating our question using the data of 50 colleges in Massachusetts with the largest undergraduate student population. Delving deeper, we will be exploring the governance structure and retention rates. Firstly, we will group our selection of colleges based on the cities these are located in and then visualize the distribution of the type of governance structures – whether the colleges are Public, Private Non-profit, or Private For-profit. Then, we will examine the correlation between retention rates and the undergraduate population based on the type of institution to help us draw conclusions from the data.\n\n\n\n\n\n\n\n\n\n\n\nThe first plot explores the governance structure of the largest 50 colleges in different cities of Massachusetts. The largest 50 schools are grouped with the cities these are located in and the length of the bars indicates the number of Public, Private Non-Profit, and Private For-Profit universities in each of those cities. Notably, there are no Private For-profit college in our selection, hence the bar chart omits the category. The plot concludes Boston has the highest number of big schools, followed by Worcester, Springfield, and Cambridge. The colors of the bars indicate that overall the number of public schools is higher than the number of private colleges in our selection of the largest MA colleges.\n\n\n\n\n\n\n\n\n\n\n\n\nThe second plot explores the correlation between the undergraduate population and the retention rate. For public colleges, we can see an inconclusive positive correlation between a larger undergraduate population and a higher retention rate as the points are scattered, showing that larger public universities are likely to have a higher retention rate. However, the points for private nonprofit colleges are in a larger cluster, signifying that there isn’t a direct and obvious correlation between undergraduate student body size and retention rate.\nAssumptions and commitments that informed this data set include assuming that the colleges participate in Title IV programs (or meet similar criteria to participating institutions), and that these colleges report wholly correct data to the IPEDS. However, a lot of the data is missing as colleges did not report some data to the IPEDS. The educational institutions and organizations collecting the data have had a say regarding this dataset, and it is hard to find reliable data if the institutions don’t report their information. The benefits and harms of this dataset may be (shouldn’t be, but) that institutions can pick and choose the data they present, so that either data is missing, or it is positively skewed towards certain institutions when it’s beneficial."
+  },
+  {
+    "objectID": "scorecard_analysis.html",
+    "href": "scorecard_analysis.html",
+    "title": "SDS 192 Mini-Project 1",
+    "section": "",
+    "text": "##Does the governance structure of the colleges with large number of undergraduate students in Massachusetts affect their retention rate?\nWe investigated this question using the College Scorecard dataset. This data aims to increase transparency and help prospective students and families compare colleges based on their goals and requirements. The College Scorecard was produced by the U.S. Department of Education taking data from the federal reporting from institutions, data on federal financial aid, and tax information. These were taken directly or derived from the data reported to the Integrated Postsecondary Education Data System (IPEDS).\nFrom the dataset, we will be investigating our question using the data of 50 colleges in Massachusetts with the largest undergraduate student population. Delving deeper, we will be exploring the governance structure and retention rates. Firstly, we will group our selection of colleges based on the cities these are located in and then visualize the distribution of the type of governance structures – whether the colleges are Public, Private Non-profit, or Private For-profit. Then, we will examine the correlation between retention rates and the undergraduate population based on the type of institution to help us draw conclusions from the data.\n\nPlot 1\n\n\n\n\n\n\n\n\n\nThe first plot explores the governance structure of the largest 50 colleges in different cities of Massachusetts. The largest 50 schools are grouped with the cities these are located in and the length of the bars indicates the number of Public, Private Non-Profit, and Private For-Profit universities in each of those cities. Notably, there are no Private For-profit college in our selection, hence the bar chart omits the category. The plot concludes Boston has the highest number of big schools, followed by Worcester, Springfield, and Cambridge. The colors of the bars indicate that overall the number of public schools is higher than the number of private colleges in our selection of the largest MA colleges.\n\n\nPlot 2\n\n\n\n\n\n\n\n\n\nThe second plot explores the correlation between the undergraduate population and the retention rate. For public colleges, we can see an inconclusive positive correlation between a larger undergraduate population and a higher retention rate as the points are scattered, showing that larger public universities are likely to have a higher retention rate. However, the points for private nonprofit colleges are in a larger cluster, signifying that there isn’t a direct and obvious correlation between undergraduate student body size and retention rate.\nAssumptions and commitments that informed this data set include assuming that the colleges participate in Title IV programs (or meet similar criteria to participating institutions), and that these colleges report wholly correct data to the IPEDS. However, a lot of the data is missing as colleges did not report some data to the IPEDS. The educational institutions and organizations collecting the data have had a say regarding this dataset, and it is hard to find reliable data if the institutions don’t report their information. The benefits and harms of this dataset may be (shouldn’t be, but) that institutions can pick and choose the data they present, so that either data is missing, or it is positively skewed towards certain institutions when it’s beneficial."
+  },
+  {
+    "objectID": "mapping.html",
+    "href": "mapping.html",
+    "title": "SDS 192 Project 3",
+    "section": "",
+    "text": "This project maps out the Late Stage Breast Cancer Incidence Rates with state-level age-adjusted data from Lyman (2020). The data in this dataset are segmented by age of the women. For this project, we have taken the data for All Ages, Ages Under 50 and Ages 50 & Over. To note, this data explicitly states that it does not include Nevada and Puerto Rico, but the dataset does not mention that Indiana is missing data, so we are taking all the states (including Hawaii and Alaska) besides Nevada and Indiana for our analysis. With this data, we aimed to find whether there was a general trend of breast cancer across the USA and New England.\n\nAcross the USA…\nFor the first segment of our analysis, we explored the late stage cancer incidence rates across all the states in the USA. For all age averages, southeastern states of Mississippi, Louisiana and Georgia shows the highest incidence. Massachusetts and Arizona shows the least incidence. For under 50 age averages, the northern and eastern states show the highest incidence. Interestingly, South Dakota has one of the minimum incidence rates unlike the surrounding states. The South has a general trend of least incidence. For over 50, the trend is similar to the all ages average with Mississippi, Louisiana and Georgia having the highest incidence.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAcross New England…\nFor the second segment of our analysis, we explored the late stage cancer incidence rates across the New England area in the USA. For all age averages, New Hampshire and Connecticut had the highest incidence rates in the New England area, while Massachusetts had the lowest incidence rate. For under 50 age averages, Connecticut and Rhode Island show the highest incidence, while Massachusetts remains with the lowest rate. For over 50,the trend remains similar to the previous trend with all ages and under 50, showing New Hampshire with the highest rate, while Connecticut is second highest, similar to the trend in all ages. As always, Massachusetts remains the lowest incidence rate.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOverall, some states show a general trend of late stage breast cancer incidence across all age groups. However, we cannot find a direct relationship between the cancer incidence rates and the geographical or population size. Therefore, we hypothesize that some other influencing factors should exist. Further metadata is required for more granular analysis. It may also help if we had data from Nevada and Indiana.\n\n\n\n\n\nReferences\n\nLyman, Jeremy. 2020. “NCI State Late Stage Breast Cancer Incidence Rates.” National Cancer Institute. https://hub.arcgis.com/datasets/NCI::nci-state-late-stage-breast-cancer-incidence-rates/about."
+  },
+  {
+    "objectID": "fec-analysis.html",
+    "href": "fec-analysis.html",
+    "title": "SDS 192 Mini-Project 2",
+    "section": "",
+    "text": "This project uses the the data published by the U.S Federal Election for the state of Pennsylvania in the 2015-2016 election cycle. The aim is explore the expenditures and committee contributions for Democrat and Republicans in the presidential election.\nWe start by trying to find any correlation between the total amount of money transacted and total votes.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nIn general, the number of total votes seems to be similar for increasing number of money transacted We do not see any significant relartionship.\nPart 2 of the analysis looks into the transactions made from the committees for candidates running in the presidential election in Pennsylvania. The two candidates running here in 2016 were Hillary Clinton and Donald Trump - the latter winning in the state. For our analysis, we get the total transaction amount for each category of transaction type for each candidate. Our initial hypothesis was that we will find some positive correlation with the amount of transactions in favor with the election result. However, we found out the highest transaction was made for Donald Trump campaign opposing his candidacy (24A).\n\n\n\n\n\n\n\n\n\nIndependent expenditure advocating the candidacy (24E) was almost similar for both the candidates. Clinton’s campaign had significantly more expenditure for communication (24F) than that of Trump’s. However, the amount of money spent against Trump’s candidacy exceeds that of Clinton’s by a huge difference. Nevertheless, despite these factors, Trump had a successful race in Pennsylvania. The bar chart effectively helps us to visualise this insight."
+  }
+]

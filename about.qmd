@@ -13,8 +13,6 @@ about:
       href: https://youtu.be/W2afI0n8pUk?si=0JaRZQaotgP8IPiI
 ---
 
-
 **Maisha Tasneem** is a Junior majoring in Biotechnology. She is interested in exploring Biology using computational methods. She is also passionate about making biology more accessible and fun to people using simple visualization about complex concepts!
 
 This course is a baby step towards that...
-

@@ -11,11 +11,12 @@ website:
       - href: about.qmd
         text: About Me
       - href: scorecard_analysis.qmd
-        text: Project-1
+        text: Project 1
       - href: fec-analysis.qmd
-        text: Project-2
+        text: Project 2
       - href: mapping.qmd
-        text: Project-3
+        text: Project 3
+  
 
 format:
   html:

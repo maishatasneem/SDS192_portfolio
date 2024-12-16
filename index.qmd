@@ -14,4 +14,4 @@ To see my R learning journey from the beginning of the course to the final proje
 
 -   [Project 3:](project_3/mapping.qmd) Late State Breast Cancer Incidence in the USA
 
-You can find more about me on the "[About Me](about.qmd)" section ;)
+You can find more about me on the "[About Me](about.qmd)" section!
