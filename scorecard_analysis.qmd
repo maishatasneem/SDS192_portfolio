@@ -72,7 +72,7 @@ view(sc_largest_50)
 ```
 
 
-##Does the governance structure of the colleges with large number of undergraduate students in Massachusetts affect their retention rate?
+## Does the governance structure of the colleges with large number of undergraduate students in Massachusetts affect their retention rate?
 
 We investigated this question using the College Scorecard dataset. This data aims to increase transparency and help prospective students and families compare colleges based on their goals and requirements. The College Scorecard was produced by the U.S. Department of Education taking data from the federal reporting from institutions, data on federal financial aid, and tax information. These were taken directly or derived from the data reported to the Integrated Postsecondary Education Data System (IPEDS).
 
