@@ -8,10 +8,10 @@ This website is a portfolio of my work done for my Introduction to Data Science 
 
 To see my R learning journey from the beginning of the course to the final project, explore the projects below -
 
--   [Project 1:](project_1/scorecard_analysis.qmd) Does the governance structure of the largest colleges in Massachusetts affect the retention rate?
+-   [Project 1:](scorecard_analysis.qmd) Does the governance structure of the largest colleges in Massachusetts affect the retention rate?
 
--   [Project 2:](project_2/fec-analysis.qmd) Expenditures and Committee Contributions for Democrat and Republicans in the 2016 presidential election.
+-   [Project 2:](fec-analysis.qmd) Expenditures and Committee Contributions for Democrat and Republicans in the 2016 presidential election.
 
--   [Project 3:](project_3/mapping.qmd) Late State Breast Cancer Incidence in the USA
+-   [Project 3:](mapping.qmd) Late State Breast Cancer Incidence in the USA
 
 You can find more about me on the "[About Me](about.qmd)" section!
