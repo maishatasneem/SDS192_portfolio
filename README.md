@@ -1,2 +1,2 @@
 # SDS192_portfolio
-This repo contains all the projects from Introduction to Data Science with R (SDS192) under Smith College
+Find my projects from Introduction to Data Science with R (SDS192) under Smith College at https://maishatasneem.github.io/SDS192_portfolio/scorecard_analysis.html
